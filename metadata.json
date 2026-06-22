@@ -1,5 +1,5 @@
 {
-  "name": "Professional Resume Portfolio",
+  "name": "Hamed Sadeghi",
   "description": "An interactive technical resume and portfolio builder tailored for Developer, Product Manager, and CTO roles, featuring multiple templates, focus modes, and a Gemini-powered AI Job-Fit Analyzer.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]

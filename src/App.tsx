@@ -295,59 +295,59 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FDFCFB] text-[#1A1A1A] pb-16 selection:bg-teal-100 selection:text-teal-900 transition-colors duration-150">
+    <div className="min-h-screen bg-[#FDFCFB] text-[#1A1A1A] pb-16 selection:bg-teal-100 selection:text-teal-900 transition-colors duration-150 relative">
       
-      {/* 1. Header Toolbar (Actions & Control Rig) - Static & Hidden in PDF Print */}
-      <header className="no-print sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200 py-3 px-4 shadow-sm">
-        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          
-          {/* Logo & Subtext */}
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-slate-900 to-slate-800 flex items-center justify-center text-white shadow-md">
-              <Terminal className="h-5 w-5" />
-            </div>
-            <div>
-              <h1 className="font-display font-bold text-base tracking-tight text-slate-900">
-                Hamed Sadeghi
-              </h1>
-              <p className="text-xs text-slate-500 font-medium">
-                Engineering Leader &middot; Professional Resume Platform
-              </p>
-            </div>
-          </div>
-
-          {/* Configuration Controls */}
-          <div className="flex flex-wrap items-center gap-3">
+      {/* 1. Header Toolbar (Actions & Control Rig) - Static & Hidden in PDF Print (Only rendered when customizer is active) */}
+      {isCustomizerOpen && (
+        <header className="no-print sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200 py-3 px-4 shadow-sm">
+          <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
             
-            {/* Customizer Mode Toggle (Toggles all controls) */}
-            <button
-              onClick={() => setIsCustomizerOpen(!isCustomizerOpen)}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${
-                isCustomizerOpen 
-                  ? "bg-indigo-50 border-indigo-200 text-indigo-700 shadow-sm" 
-                  : "bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100"
-              }`}
-            >
-              <SlidersHorizontal className="h-3.5 w-3.5" />
-              <span>{isCustomizerOpen ? "Hide Customizer Tools" : "Personalize / AI Match"}</span>
-            </button>
+            {/* Logo & Subtext */}
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-slate-900 to-slate-800 flex items-center justify-center text-white shadow-md">
+                <Terminal className="h-5 w-5" />
+              </div>
+              <div>
+                <h1 className="font-display font-bold text-base tracking-tight text-slate-900">
+                  Hamed Sadeghi
+                </h1>
+                <p className="text-xs text-slate-500 font-medium">
+                  Engineering Leader &middot; Professional Resume Platform
+                </p>
+              </div>
+            </div>
 
-            {/* Print Action */}
-            <button
-              onClick={handlePrintTrigger}
-              className="flex items-center gap-2 px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-semibold shadow-sm transition-all"
-            >
-              <Printer className="h-3.5 w-3.5" />
-              PDF Print
-            </button>
+            {/* Configuration Controls */}
+            <div className="flex flex-wrap items-center gap-3">
+              
+              {/* Customizer Mode Toggle (Toggles all controls) */}
+              <button
+                type="button"
+                onClick={() => setIsCustomizerOpen(false)}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold border bg-indigo-50 border-indigo-200 text-indigo-700 shadow-sm transition-all"
+              >
+                <SlidersHorizontal className="h-3.5 w-3.5" />
+                <span>Hide Customizer Tools</span>
+              </button>
+
+              {/* Print Action */}
+              <button
+                type="button"
+                onClick={handlePrintTrigger}
+                className="flex items-center gap-2 px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-semibold shadow-sm transition-all"
+              >
+                <Printer className="h-3.5 w-3.5" />
+                PDF Print
+              </button>
+            </div>
           </div>
-        </div>
-      </header>
+        </header>
+      )}
 
       {/* 2. Primary Layout Workspace */}
       <main className={isCustomizerOpen 
         ? "max-w-6xl mx-auto px-4 mt-6 grid grid-cols-1 lg:grid-cols-12 gap-6"
-        : "max-w-4xl mx-auto px-4 mt-6 grid grid-cols-1 gap-6"
+        : "max-w-4xl mx-auto px-4 mt-12 grid grid-cols-1 gap-6"
       }>
         
         {/* LEFT COLUMN: Controls, Customization & AI Diagnostics (SPAN 4) - Hidden in Print */}
@@ -1006,6 +1006,31 @@ export default function App() {
         </div>
 
       </main>
+
+      {/* Sleek Floating control bar - Only shown when Customizer is closed and hidden in print */}
+      {!isCustomizerOpen && (
+        <div className="no-print fixed bottom-6 right-6 z-50 flex items-center gap-2">
+          {/* Print Trigger */}
+          <button
+            type="button"
+            onClick={handlePrintTrigger}
+            title="Download PDF / Print Resume"
+            className="flex h-11 w-11 items-center justify-center rounded-full bg-slate-900 text-white shadow-xl hover:bg-slate-800 hover:scale-105 active:scale-95 transition-all outline-none border border-slate-800"
+          >
+            <Printer className="h-4.5 w-4.5" />
+          </button>
+          {/* Customizer / AI Match Toggle Trigger */}
+          <button
+            type="button"
+            onClick={() => setIsCustomizerOpen(true)}
+            title="Open AI Matchmaker & Customizer Tools"
+            className="flex h-11 px-4 items-center justify-center gap-2 rounded-full bg-indigo-600 text-white shadow-xl hover:bg-indigo-500 hover:scale-105 active:scale-95 transition-all text-xs font-bold outline-none border border-indigo-500"
+          >
+            <SlidersHorizontal className="h-4 w-4" />
+            <span>AI Match & Style</span>
+          </button>
+        </div>
+      )}
     </div>
   );
 }
