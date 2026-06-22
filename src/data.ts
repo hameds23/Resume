@@ -21,6 +21,32 @@ export const personalInfo = {
 
 export const experiences: ExperienceItem[] = [
   {
+    id: "web-commerce",
+    company: "Freelance & Consultative Contracts",
+    role: "Lead Full-Stack Web Eng. & Headless Commerce Architect",
+    location: "Tehran, Iran",
+    period: "January 2024 – Present",
+    focus: "both",
+    bullets: [
+      {
+        text: "Lead full-stack design and deployment of modern React 19 / Next.js web applications, leveraging React Server Components (RSC) to construct blazing fast, content-heavy digital profiles and marketplaces, scaling load speeds and optimizing SEO visibility.",
+        focus: "developer"
+      },
+      {
+        text: "Orchestrated headless commerce backends using Medusa with PostgreSQL, engineering modular promotions engines, customized multi-step checkout processes, and webhook endpoints to keep backend resources synchronized with storefront activity.",
+        focus: "both"
+      },
+      {
+        text: "Designed and implemented robust, high-performance web systems utilizing Django (Python API frameworks) with Celery and Redis to execute computationally expensive back-end AI classifications and asynchronous log audits.",
+        focus: "developer"
+      },
+      {
+        text: "Collaborated with business stakeholders to map out technical feature roadpaths, aligning complex e-commerce flows and low-latency API architectures with target user-experience design goals.",
+        focus: "pm"
+      }
+    ]
+  },
+  {
     id: "national-ai",
     company: "National AI Assistant for Government Ministries",
     role: "Senior AI & LLM Developer / Product Lead",
