@@ -1,0 +1,70 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,900;1,400;1,700;1,900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Playfair Display", "Georgia", serif;
+  --font-serif: "Playfair Display", "Georgia", serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+/* Custom UI Tweaks */
+@layer base {
+  body {
+    background-color: #FDFCFB;
+    color: #1A1A1A;
+    font-family: var(--font-sans);
+  }
+
+  /* Elegant scrollbars for deep cards layout */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #e5e5e5;
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #cbd5e1;
+  }
+}
+
+/* Elite PDF Print Stylesheet */
+@media print {
+  body {
+    background: #FDFCFB !important;
+    color: #1A1A1A !important;
+    font-size: 11px !important;
+  }
+  
+  /* Hide all interactive, non-resume controls during printing */
+  .no-print {
+    display: none !important;
+  }
+
+  /* Ensure resume container takes full width with crisp styling */
+  .print-container {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+    box-shadow: none !important;
+    border: none !important;
+    background: #FDFCFB !important;
+  }
+
+  /* Prevent awkward page splits in headers or experiences */
+  .print-avoid-break {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* Force background colors during printing for skills and highlights */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}
