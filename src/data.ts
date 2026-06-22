@@ -196,7 +196,7 @@ export const experiences: ExperienceItem[] = [
 
 export const recentWebHighlight = {
   title: "Recent Web Engineering Highlights (Next.js, Django, Medusa)",
-  description: "Leveraging 10 years of automation and AI, I have recently built and launched ultra-high-performance web apps and modular marketplaces featuring beautiful designs and heavy traffic optimizations:",
+  description: "Leveraging custom machine learning pipelines and modern architectures, I have recently developed and launched high-performance web applications and modular marketplaces featuring optimized designs and highly efficient query engines:",
   points: [
     {
       tech: "Next.js & React 19",

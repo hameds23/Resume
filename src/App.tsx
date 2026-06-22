@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { 
   motion, 
   AnimatePresence 
@@ -32,7 +32,9 @@ import {
   Terminal, 
   Clock, 
   ArrowRight, 
-  ShieldAlert
+  ShieldAlert,
+  SlidersHorizontal,
+  Settings
 } from "lucide-react";
 
 // Pre-defined job descriptions for quick user interaction
@@ -69,8 +71,16 @@ Ideal Candidate:
 ];
 
 export default function App() {
-  const [focus, setFocus] = useState<FocusMode>("hybrid");
-  const [template, setTemplate] = useState<"slate" | "minimalist" | "bento">("slate");
+  const [focus, setFocus] = useState<FocusMode>(() => {
+    return (localStorage.getItem("resume_focus") as FocusMode) || "hybrid";
+  });
+  const [template, setTemplate] = useState<"slate" | "minimalist" | "bento">(() => {
+    return (localStorage.getItem("resume_template") as "slate" | "minimalist" | "bento") || "slate";
+  });
+  const [accentColor, setAccentColor] = useState<"slate" | "navy" | "burgundy" | "spruce">(() => {
+    return (localStorage.getItem("resume_accentColor") as "slate" | "navy" | "burgundy" | "spruce") || "slate";
+  });
+  const [isCustomizerOpen, setIsCustomizerOpen] = useState(false);
   const [activeSkill, setActiveSkill] = useState<string | null>(null);
   const [customJobDesc, setCustomJobDesc] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -80,6 +90,41 @@ export default function App() {
   const [reassuringMessage, setReassuringMessage] = useState("");
   
   const analysisRef = useRef<HTMLDivElement>(null);
+
+  // Sync to localStorage
+  useEffect(() => {
+    localStorage.setItem("resume_focus", focus);
+  }, [focus]);
+
+  useEffect(() => {
+    localStorage.setItem("resume_template", template);
+  }, [template]);
+
+  useEffect(() => {
+    localStorage.setItem("resume_accentColor", accentColor);
+  }, [accentColor]);
+
+  // Read URL query params on initial mount
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const qFocus = params.get("focus") as FocusMode;
+    const qTemplate = params.get("template") as "slate" | "minimalist" | "bento";
+    const qAccent = params.get("accent") as "slate" | "navy" | "burgundy" | "spruce";
+    const qBuilder = params.get("builder") === "true";
+
+    if (qFocus && ["developer", "pm", "hybrid"].includes(qFocus)) {
+      setFocus(qFocus);
+    }
+    if (qTemplate && ["slate", "minimalist", "bento"].includes(qTemplate)) {
+      setTemplate(qTemplate);
+    }
+    if (qAccent && ["slate", "navy", "burgundy", "spruce"].includes(qAccent)) {
+      setAccentColor(qAccent);
+    }
+    if (qBuilder) {
+      setIsCustomizerOpen(true);
+    }
+  }, []);
 
   // Set selected example Job Description
   const handleSelectExampleJob = (job: typeof EXAMPLE_JOBS[0]) => {
@@ -101,7 +146,7 @@ export default function App() {
     // Dynamic reassuring feedback sequences
     const messages = [
       "Securing connection with Gemini AI...",
-      "Parsing job requirements & searching Hamed's 10-year credentials...",
+      "Parsing job requirements & searching Hamed's professional credentials...",
       "Mapping Next.js, Django, and Medusa highlights to the opening...",
       "Synthesizing customized recruiter introduction letter...",
       "Compiling final ATS match score & structural strategy..."
@@ -162,6 +207,71 @@ export default function App() {
     }
   };
 
+  const accentThemes = {
+    slate: {
+      primary: "text-slate-900",
+      muted: "text-slate-500",
+      border: "border-slate-200",
+      bgLight: "bg-slate-50/80",
+      accentBorder: "border-slate-900",
+      taglineText: "text-slate-800",
+      bulletBorder: "border-slate-900",
+      accentBackgroundClass: "bg-slate-900 text-white",
+      accentTextClass: "text-slate-900",
+      gpaBgClass: "bg-slate-900 text-slate-100",
+      hoverRing: "ring-slate-900 border-slate-900",
+      bentoBg: "bg-gradient-to-tr from-slate-900 to-slate-800 text-white",
+      bentoAccent: "text-teal-400",
+    },
+    navy: {
+      primary: "text-[#1B365D]",
+      muted: "text-[#4A5D78]",
+      border: "border-[#D2DAE6]",
+      bgLight: "bg-[#F4F7FB]",
+      accentBorder: "border-[#1B365D]",
+      taglineText: "text-[#1B365D]",
+      bulletBorder: "border-[#1B365D]",
+      accentBackgroundClass: "bg-[#1B365D] text-white",
+      accentTextClass: "text-[#1B365D]",
+      gpaBgClass: "bg-[#1B365D] text-[#ECEFF4]",
+      hoverRing: "ring-[#1B365D] border-[#1B365D]",
+      bentoBg: "bg-gradient-to-tr from-[#1B365D] to-[#0A1A30] text-white",
+      bentoAccent: "text-sky-300",
+    },
+    burgundy: {
+      primary: "text-[#6B1F2D]",
+      muted: "text-[#8D6B70]",
+      border: "border-[#ECE2E4]",
+      bgLight: "bg-[#FAF5F6]",
+      accentBorder: "border-[#6B1F2D]",
+      taglineText: "text-[#6B1F2D]",
+      bulletBorder: "border-[#6B1F2D]",
+      accentBackgroundClass: "bg-[#6B1F2D] text-white",
+      accentTextClass: "text-[#6B1F2D]",
+      gpaBgClass: "bg-[#6B1F2D] text-[#FCF2F4]",
+      hoverRing: "ring-[#6B1F2D] border-[#6B1F2D]",
+      bentoBg: "bg-gradient-to-tr from-[#6B1F2D] to-[#3a0f16] text-white",
+      bentoAccent: "text-rose-200",
+    },
+    spruce: {
+      primary: "text-[#1B3D2F]",
+      muted: "text-[#50665C]",
+      border: "border-[#D8E2DC]",
+      bgLight: "bg-[#F3F6F4]",
+      accentBorder: "border-[#1B3D2F]",
+      taglineText: "text-[#1B3D2F]",
+      bulletBorder: "border-[#1B3D2F]",
+      accentBackgroundClass: "bg-[#1B3D2F] text-white",
+      accentTextClass: "text-[#1B3D2F]",
+      gpaBgClass: "bg-[#1B3D2F] text-[#ECF4F0]",
+      hoverRing: "ring-[#1B3D2F] border-[#1B3D2F]",
+      bentoBg: "bg-gradient-to-tr from-[#1B3D2F] to-[#0D241B] text-white",
+      bentoAccent: "text-emerald-300",
+    }
+  };
+
+  const activeTheme = accentThemes[accentColor];
+
   // Filter skills mapping helper to highlight jobs
   const isExperienceUsingSelectedSkill = (expId: string, skill: string | null): boolean => {
     if (!skill) return false;
@@ -201,7 +311,7 @@ export default function App() {
                 Hamed Sadeghi
               </h1>
               <p className="text-xs text-slate-500 font-medium">
-                Engineering Leader &middot; Interactive Resume Rig
+                Engineering Leader &middot; Professional Resume Platform
               </p>
             </div>
           </div>
@@ -209,40 +319,18 @@ export default function App() {
           {/* Configuration Controls */}
           <div className="flex flex-wrap items-center gap-3">
             
-            {/* Template Chooser */}
-            <div className="flex items-center gap-1.5 bg-slate-100 p-0.5 rounded-lg border border-slate-200">
-              <span className="text-[10px] font-mono font-bold text-slate-500 uppercase px-1.5">Template</span>
-              <button 
-                onClick={() => setTemplate("slate")}
-                className={`px-2.5 py-1 text-xs font-semibold rounded-md transition-all ${
-                  template === "slate" 
-                    ? "bg-white text-slate-900 shadow-sm" 
-                    : "text-slate-600 hover:text-slate-900"
-                }`}
-              >
-                Executive
-              </button>
-              <button 
-                onClick={() => setTemplate("minimalist")}
-                className={`px-2.5 py-1 text-xs font-semibold rounded-md transition-all ${
-                  template === "minimalist" 
-                    ? "bg-white text-slate-900 shadow-sm" 
-                    : "text-slate-600 hover:text-slate-900"
-                }`}
-              >
-                Minimalist
-              </button>
-              <button 
-                onClick={() => setTemplate("bento")}
-                className={`px-2.5 py-1 text-xs font-semibold rounded-md transition-all relative ${
-                  template === "bento" 
-                    ? "bg-white text-slate-900 shadow-sm" 
-                    : "text-slate-600 hover:text-slate-900"
-                }`}
-              >
-                Bento
-              </button>
-            </div>
+            {/* Customizer Mode Toggle (Toggles all controls) */}
+            <button
+              onClick={() => setIsCustomizerOpen(!isCustomizerOpen)}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${
+                isCustomizerOpen 
+                  ? "bg-indigo-50 border-indigo-200 text-indigo-700 shadow-sm" 
+                  : "bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100"
+              }`}
+            >
+              <SlidersHorizontal className="h-3.5 w-3.5" />
+              <span>{isCustomizerOpen ? "Hide Customizer Tools" : "Personalize / AI Match"}</span>
+            </button>
 
             {/* Print Action */}
             <button
@@ -257,17 +345,21 @@ export default function App() {
       </header>
 
       {/* 2. Primary Layout Workspace */}
-      <main className="max-w-6xl mx-auto px-4 mt-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <main className={isCustomizerOpen 
+        ? "max-w-6xl mx-auto px-4 mt-6 grid grid-cols-1 lg:grid-cols-12 gap-6"
+        : "max-w-4xl mx-auto px-4 mt-6 grid grid-cols-1 gap-6"
+      }>
         
         {/* LEFT COLUMN: Controls, Customization & AI Diagnostics (SPAN 4) - Hidden in Print */}
-        <div className="no-print lg:col-span-4 flex flex-col gap-6">
-          
-          {/* A. Focus Switcher Panel */}
-          <section className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
-            <div className="flex items-center gap-2 mb-3">
-              <Sparkles className="h-4 w-4 text-emerald-600" />
-              <h3 className="font-display font-bold text-sm text-slate-900">Resume Framing Focus</h3>
-            </div>
+        {isCustomizerOpen ? (
+          <div className="no-print lg:col-span-4 flex flex-col gap-6">
+            
+            {/* A. Focus Switcher Panel */}
+            <section className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
+              <div className="flex items-center gap-2 mb-3">
+                <Sparkles className="h-4 w-4 text-emerald-600" />
+                <h3 className="font-display font-bold text-sm text-slate-900">Resume Framing Focus</h3>
+              </div>
             <p className="text-xs text-slate-500 mb-4 leading-relaxed">
               Targeting a developer track, product leadership track, or a technical cross-over role? Toggle to restructure the experiences.
             </p>
@@ -291,7 +383,7 @@ export default function App() {
                     : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/60"
                 }`}
               >
-                Product Mgr
+                Product Manager
               </button>
               <button
                 onClick={() => setFocus("hybrid")}
@@ -318,6 +410,113 @@ export default function App() {
                 {focus === "hybrid" && (
                   <span>Combines extreme architectural technical depth with strategic product mastery. Ideal for tech leaders, Engineering Managers, or Founding Engineers.</span>
                 )}
+              </div>
+            </div>
+
+            {/* Base Structural Style (Template Chooser) */}
+            <div className="mt-5 border-t border-slate-100 pt-4">
+              <div className="flex items-center gap-2 mb-2.5">
+                <Settings className="h-4 w-4 text-slate-600" />
+                <h3 className="font-display font-bold text-sm text-slate-900">Base Structural Style</h3>
+              </div>
+              <p className="text-[11px] text-slate-500 mb-3 leading-relaxed">
+                Choose the visual layout architecture: Classic formal editorial, strict technical minimalist, or modern layout bento cell blocks:
+              </p>
+              <div className="grid grid-cols-3 gap-1 bg-slate-100 p-1 rounded-xl">
+                <button
+                  type="button"
+                  onClick={() => setTemplate("slate")}
+                  className={`py-2 text-[10px] font-bold rounded-lg transition-all ${
+                    template === "slate" 
+                      ? "bg-white text-slate-900 shadow-sm" 
+                      : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/40"
+                  }`}
+                >
+                  Executive
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTemplate("minimalist")}
+                  className={`py-2 text-[10px] font-bold rounded-lg transition-all ${
+                    template === "minimalist" 
+                      ? "bg-white text-slate-900 shadow-sm" 
+                      : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/40"
+                  }`}
+                >
+                  Minimalist
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTemplate("bento")}
+                  className={`py-2 text-[10px] font-bold rounded-lg transition-all ${
+                    template === "bento" 
+                      ? "bg-white text-slate-900 shadow-sm" 
+                      : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/40"
+                  }`}
+                >
+                  Bento Grid
+                </button>
+              </div>
+            </div>
+
+            {/* Premium Theme Palette Accent Row */}
+            <div className="mt-5 border-t border-slate-100 pt-4">
+              <div className="flex items-center gap-2 mb-2.5">
+                <BookOpen className="h-4 w-4 text-slate-600" />
+                <h3 className="font-display font-bold text-sm text-slate-900">Design Theme Accent</h3>
+              </div>
+              <p className="text-[11px] text-slate-500 mb-3 leading-relaxed">
+                Applying for an executive, technical, or academic role? Choose a highly formal layout accent color.
+              </p>
+              <div className="grid grid-cols-2 gap-1.5 p-1 bg-slate-50 rounded-xl border border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setAccentColor("slate")}
+                  className={`flex items-center gap-2 p-2 rounded-lg transition-all border ${
+                    accentColor === "slate" 
+                      ? "bg-white border-slate-300 text-slate-900 shadow-sm font-bold" 
+                      : "bg-transparent border-transparent text-slate-500 hover:text-slate-950 hover:bg-slate-200/40"
+                  }`}
+                >
+                  <div className="h-3.5 w-3.5 rounded-full bg-slate-900 border border-slate-600 shrink-0" />
+                  <span className="text-[10px] tracking-tight">Executive Slate</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setAccentColor("navy")}
+                  className={`flex items-center gap-2 p-2 rounded-lg transition-all border ${
+                    accentColor === "navy" 
+                      ? "bg-white border-slate-300 text-slate-900 shadow-sm font-bold" 
+                      : "bg-transparent border-transparent text-slate-500 hover:text-slate-950 hover:bg-slate-100"
+                  }`}
+                >
+                  <div className="h-3.5 w-3.5 rounded-full bg-[#1B365D] border border-blue-900 shrink-0" />
+                  <span className="text-[10px] tracking-tight">Royal Navy</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setAccentColor("burgundy")}
+                  className={`flex items-center gap-2 p-2 rounded-lg transition-all border ${
+                    accentColor === "burgundy" 
+                      ? "bg-white border-slate-300 text-slate-900 shadow-sm font-bold" 
+                      : "bg-transparent border-transparent text-slate-500 hover:text-slate-950 hover:bg-slate-100"
+                  }`}
+                >
+                  <div className="h-3.5 w-3.5 rounded-full bg-[#6B1F2D] border border-red-950 shrink-0" />
+                  <span className="text-[10px] tracking-tight">Academic Wine</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setAccentColor("spruce")}
+                  className={`flex items-center gap-2 p-2 rounded-lg transition-all border ${
+                    accentColor === "spruce" 
+                      ? "bg-white border-slate-300 text-slate-900 shadow-sm font-bold" 
+                      : "bg-transparent border-transparent text-slate-500 hover:text-slate-950 hover:bg-slate-100"
+                  }`}
+                >
+                  <div className="h-3.5 w-3.5 rounded-full bg-[#1B3D2F] border border-emerald-900 shrink-0" />
+                  <span className="text-[10px] tracking-tight">Spruce Green</span>
+                </button>
               </div>
             </div>
           </section>
@@ -549,9 +748,10 @@ export default function App() {
           </section>
 
         </div>
+        ) : null}
 
-        {/* RIGHT COLUMN: The Interactive Resume Document Core (SPAN 8) */}
-        <div className="lg:col-span-8">
+        {/* RIGHT COLUMN: The Interactive Resume Document Core (SPAN 8 or full-width) */}
+        <div className={isCustomizerOpen ? "lg:col-span-8" : "w-full"}>
           
           {/* Active Skill mapping overlay notice */}
           {activeSkill && (
@@ -575,25 +775,25 @@ export default function App() {
             <div>
               {/* 3.1. Standard Template 1: Header (Editorial Classic Theme) */}
               {template === "slate" && (
-                <div className="border-b border-[#E5E5E5] pb-8 mb-8 text-center sm:text-left transition-all duration-300">
+                <div className={`border-b pb-8 mb-8 text-center sm:text-left transition-all duration-300 ${activeTheme.border}`}>
                   <div className="flex flex-col sm:flex-row items-baseline justify-between gap-4">
                     <div>
-                      <h1 className="font-display font-black text-5xl sm:text-6xl tracking-tighter text-[#1A1A1A] italic leading-none mb-3">
+                      <h1 className={`font-display font-black text-5xl sm:text-6xl tracking-tighter italic leading-none mb-3 ${activeTheme.primary}`}>
                         {personalInfo.name}
                       </h1>
                       <div className="flex flex-wrap gap-x-4 gap-y-1.5 items-center mt-1">
-                        <span className="text-[10px] uppercase tracking-[0.2em] font-bold text-[#666]">
-                          {focus === "developer" ? "Full-Stack Architecture" : focus === "pm" ? "Product Strategy" : "Product & Architecture"}
+                        <span className={`text-[10px] uppercase tracking-[0.2em] font-bold ${activeTheme.muted}`}>
+                          {focus === "developer" ? "Full-Stack Architecture" : focus === "pm" ? "Product Management & Strategy" : "Product & Architecture"}
                         </span>
-                        <span className="w-1 h-1 bg-black rounded-full hidden sm:inline-block"></span>
-                        <span className="text-[10px] uppercase tracking-[0.2em] font-bold text-[#666]">
-                          {focus === "developer" ? "Engineering Leader" : focus === "pm" ? "Technical Product Manager" : "CTO & Technical Architect"}
+                        <span className="w-1 h-1 bg-slate-300 rounded-full hidden sm:inline-block"></span>
+                        <span className={`text-[10px] uppercase tracking-[0.2em] font-bold ${activeTheme.muted}`}>
+                          {focus === "developer" ? "Engineering Leader" : focus === "pm" ? "Technical Product Manager" : "Technology Executive Leadership"}
                         </span>
                       </div>
                     </div>
                     {/* Contacts block */}
-                    <div className="flex flex-col sm:items-end text-right text-xs text-slate-500 font-sans space-y-1.5 shrink-0 mt-3 sm:mt-0 font-medium">
-                      <span className="text-xs uppercase tracking-widest leading-loose text-right text-slate-600">
+                    <div className="flex flex-col sm:items-end text-right text-xs font-sans space-y-1.5 shrink-0 mt-3 sm:mt-0 font-medium text-slate-500">
+                      <span className={`text-xs uppercase tracking-widest leading-loose text-right ${activeTheme.muted}`}>
                         {personalInfo.location}<br />
                         {personalInfo.email}<br />
                         {personalInfo.phone}
@@ -602,8 +802,8 @@ export default function App() {
                   </div>
                   
                   {/* Editorial Quote block replacing simple banner */}
-                  <div className="mt-6 p-4 bg-[#F9F8F6] border-l-2 border-black rounded-r-lg">
-                    <p className="font-display italic text-sm text-[#333] leading-relaxed">
+                  <div className={`mt-6 p-4 border-l-2 rounded-r-lg ${activeTheme.bgLight} ${activeTheme.accentBorder}`}>
+                    <p className={`font-display italic text-sm leading-relaxed ${activeTheme.taglineText}`}>
                       "{focus === "developer" && personalInfo.taglines.developer}
                       {focus === "pm" && personalInfo.taglines.pm}
                       {focus === "hybrid" && personalInfo.taglines.hybrid}"
@@ -614,23 +814,23 @@ export default function App() {
 
               {/* 3.2. Template 2: Technical Minimalist */}
               {template === "minimalist" && (
-                <div className="pb-6 mb-6 border-b border-dashed border-slate-300 transition-all duration-300">
+                <div className={`pb-6 mb-6 border-b border-dashed transition-all duration-300 ${activeTheme.border}`}>
                   <div className="flex flex-col md:flex-row items-start justify-between gap-4">
                     <div>
                       <h1 className="font-sans font-extrabold text-2xl tracking-tighter text-slate-900 uppercase">
                         {personalInfo.name}
                       </h1>
                       <div className="flex flex-wrap items-center gap-2 mt-1.5 text-xs text-slate-400 font-mono">
-                        <span className="text-slate-900 font-bold">// SYSTEMS CODE & PRODUCT METRICS</span>
+                        <span className={`font-bold ${activeTheme.primary}`}>// SYSTEMS ENGINE & PRODUCT OUTCOMES</span>
                         <span>&middot;</span>
                         <span>Full-Stack & Product Leadership</span>
                       </div>
                     </div>
 
-                    <div className="flex flex-wrap gap-x-4 gap-y-1.5 text-xs font-mono text-slate-600 bg-slate-50 p-2.5 rounded-lg border border-slate-200">
-                      <span className="flex items-center gap-1 font-semibold"><Phone className="h-3 w-3 text-slate-400" /> {personalInfo.phone}</span>
-                      <span className="flex items-center gap-1 font-semibold"><Mail className="h-3 w-3 text-slate-400" /> {personalInfo.email}</span>
-                      <span className="flex items-center gap-1 font-semibold"><MapPin className="h-3 w-3 text-slate-400" /> {personalInfo.location}</span>
+                    <div className={`flex flex-wrap gap-x-4 gap-y-1.5 text-xs font-mono rounded-lg border p-2.5 ${activeTheme.bgLight} ${activeTheme.border} ${activeTheme.primary}`}>
+                      <span className="flex items-center gap-1 font-semibold"><Phone className="h-3 w-3 opacity-60" /> {personalInfo.phone}</span>
+                      <span className="flex items-center gap-1 font-semibold"><Mail className="h-3 w-3 opacity-60" /> {personalInfo.email}</span>
+                      <span className="flex items-center gap-1 font-semibold"><MapPin className="h-3 w-3 opacity-60" /> {personalInfo.location}</span>
                     </div>
                   </div>
 
@@ -647,15 +847,15 @@ export default function App() {
                   <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
                     
                     {/* Primary details cell */}
-                    <div className="sm:col-span-2 p-5 bg-gradient-to-tr from-slate-900 to-slate-800 text-white rounded-2xl flex flex-col justify-between min-h-[140px]">
+                    <div className={`sm:col-span-2 p-5 rounded-2xl flex flex-col justify-between min-h-[140px] ${activeTheme.bentoBg}`}>
                       <div>
                         <h1 className="font-display font-black text-2xl tracking-tight leading-none text-slate-100">
                           {personalInfo.name}
                         </h1>
-                        <span className="text-[10px] font-mono tracking-widest uppercase text-teal-400 mt-1.5 inline-block font-bold">
-                          {focus === "developer" && "SENIOR AUTOMATION BUILDER"}
-                          {focus === "pm" && "TECHNICAL PRODUCT LEADER"}
-                          {focus === "hybrid" && "CHIEF TECHNOLOGY EXECUTIVE"}
+                        <span className={`text-[10px] font-mono tracking-widest uppercase mt-1.5 inline-block font-bold ${activeTheme.bentoAccent}`}>
+                          {focus === "developer" && "SENIOR SYSTEMS & AI ENGINEER"}
+                          {focus === "pm" && "PRODUCT MANAGEMENT EXECUTIVE"}
+                          {focus === "hybrid" && "TECHNOLOGY EXECUTIVE LEADERSHIP"}
                         </span>
                       </div>
                       <div className="text-[11px] font-mono text-slate-300 mt-4 leading-relaxed bg-black/20 p-2 rounded-xl border border-white/5">
@@ -666,14 +866,14 @@ export default function App() {
                     </div>
 
                     {/* Stats metrics Cell */}
-                    <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl flex flex-col justify-between text-center">
-                      <span className="block text-[10px] uppercase font-mono tracking-wider text-slate-400 font-bold">Experience Span</span>
-                      <span className="block font-display font-extrabold text-4xl text-slate-900 my-1">10</span>
-                      <span className="block text-xs font-semibold text-slate-500">Years in Deep Tech</span>
+                    <div className={`p-4 rounded-2xl flex flex-col justify-between text-center border ${activeTheme.bgLight} ${activeTheme.border}`}>
+                      <span className="block text-[10px] uppercase font-mono tracking-wider text-slate-400 font-bold">Academic Caliber</span>
+                      <span className={`block font-display font-extrabold text-4xl my-1 ${activeTheme.primary}`}>4.0</span>
+                      <span className="block text-[10px] font-semibold text-slate-500">M.Sc. Control Eng.</span>
                     </div>
 
                     {/* Contacts cell */}
-                    <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl text-xs space-y-2 flex flex-col justify-center">
+                    <div className={`p-4 rounded-2xl text-xs space-y-2 flex flex-col justify-center border ${activeTheme.bgLight} ${activeTheme.border}`}>
                       <div className="flex items-center gap-2 text-slate-600">
                         <Phone className="h-3.5 w-3.5 text-slate-400 shrink-0" />
                         <span className="font-mono text-[11px]">{personalInfo.phone}</span>
@@ -695,7 +895,7 @@ export default function App() {
               {/* 4. Professional Summary (Unless minimalist summary was visible instead) */}
               {template !== "minimalist" && (
                 <section className="mb-6 print-avoid-break">
-                  <h3 className="text-[10px] uppercase tracking-[0.3em] font-black text-[#999] border-b border-[#E5E5E5] pb-1.5 mb-3">
+                  <h3 className={`text-[10px] uppercase tracking-[0.3em] font-black text-[#999] border-b pb-1.5 mb-3 ${activeTheme.border}`}>
                     Core Methodology & Statement
                   </h3>
                   <p className="text-xs text-slate-700 leading-relaxed font-sans text-justify">
@@ -708,7 +908,7 @@ export default function App() {
 
               {/* 6. Professional Experiences */}
               <section className="mb-6">
-                <h3 className="text-[10px] uppercase tracking-[0.3em] font-black text-[#999] border-b border-[#E5E5E5] pb-1.5 mb-4">
+                <h3 className={`text-[10px] uppercase tracking-[0.3em] font-black text-[#999] border-b pb-1.5 mb-4 ${activeTheme.border}`}>
                   Professional Accomplishments & Tenure
                 </h3>
 
@@ -718,7 +918,7 @@ export default function App() {
                     return (
                       <div 
                         key={exp.id} 
-                        className={`print-avoid-break transition-all duration-200 relative pl-5 border-l-2 border-[#1A1A1A] ${
+                        className={`print-avoid-break transition-all duration-200 relative pl-5 border-l-2 ${activeTheme.bulletBorder} ${
                           isOverlayHighlighted 
                             ? "bg-indigo-50/40 p-4 border-l-4 border-indigo-500 ring-2 ring-indigo-50" 
                             : ""
@@ -726,7 +926,7 @@ export default function App() {
                       >
                         <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-1.5 mb-1">
                           <div>
-                            <span className="font-display font-black text-base text-[#1A1A1A] mr-2">
+                            <span className={`font-display font-black text-base mr-2 ${activeTheme.primary}`}>
                               {exp.company}
                             </span>
                             <span className="text-[10px] text-slate-400 font-mono tracking-wide uppercase">
@@ -734,14 +934,14 @@ export default function App() {
                             </span>
                           </div>
                           <div className="flex items-center justify-between sm:justify-end gap-3">
-                            <span className="text-[10px] font-mono font-bold text-[#666] uppercase tracking-wider shrink-0">
+                            <span className={`text-[10px] font-mono font-bold uppercase tracking-wider shrink-0 ${activeTheme.muted}`}>
                               {exp.period}
                             </span>
                           </div>
                         </div>
 
                         {/* Title Role */}
-                        <div className="font-display font-bold italic text-xs text-[#333] mb-2.5">
+                        <div className={`font-display font-bold italic text-xs mb-2.5 ${activeTheme.taglineText}`}>
                           {exp.role}
                         </div>
 
@@ -763,19 +963,19 @@ export default function App() {
 
               {/* 7. Education Summary */}
               <section className="mb-6 print-avoid-break">
-                <h3 className="text-[10px] uppercase tracking-[0.3em] font-black text-[#999] border-b border-[#E5E5E5] pb-1.5 mb-4">
+                <h3 className={`text-[10px] uppercase tracking-[0.3em] font-black text-[#999] border-b pb-1.5 mb-4 ${activeTheme.border}`}>
                   Education & Professional Licensure
                 </h3>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {education.map((edu, idx) => (
-                    <div key={idx} className="relative pl-5 border-l-2 border-black">
+                    <div key={idx} className={`relative pl-5 border-l-2 ${activeTheme.bulletBorder}`}>
                       <div className="flex items-baseline justify-between mb-0.5">
-                        <span className="font-display font-black text-xs text-[#1A1A1A]">{edu.institution}</span>
+                        <span className={`font-display font-black text-xs ${activeTheme.primary}`}>{edu.institution}</span>
                         <span className="text-[10px] font-mono text-slate-400 shrink-0">{edu.period}</span>
                       </div>
                       <p className="text-[11px] text-[#444] italic font-medium">{edu.degree}</p>
-                      <p className="text-[9px] font-mono text-white bg-black font-semibold mt-1 inline-block px-1.5 py-0.5 rounded-none uppercase tracking-wider">
+                      <p className={`text-[9px] font-mono font-semibold mt-1 inline-block px-1.5 py-0.5 rounded-none uppercase tracking-wider ${activeTheme.gpaBgClass}`}>
                         GPA: {edu.gpa}
                       </p>
                     </div>
@@ -785,7 +985,7 @@ export default function App() {
 
               {/* 8. Research Conferences, Tournaments & Honors */}
               <section className="mb-6 print-avoid-break">
-                <h3 className="text-[10px] uppercase tracking-[0.3em] font-black text-[#999] border-b border-[#E5E5E5] pb-1.5 mb-4">
+                <h3 className={`text-[10px] uppercase tracking-[0.3em] font-black text-[#999] border-b pb-1.5 mb-4 ${activeTheme.border}`}>
                   Selected Research & Major Competitions
                 </h3>
                 <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5 text-[11px] text-slate-700 italic list-disc ml-4">

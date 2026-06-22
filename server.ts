@@ -46,7 +46,7 @@ app.post("/api/analyze-fit", async (req, res) => {
     // Context summary of Hamed Sadeghi
     const resumeContext = `
 Name: Hamed Sadeghi
-10 Years in Tech: (CTO, Senior LLM Developer, Robotics Researcher, Academy Founder)
+Professional Credentials: (CTO, Senior LLM Developer, Robotics Researcher, Academy Founder)
 Focus Requested for Pitch: ${focus}
 
 Resume Highlights:
@@ -74,7 +74,7 @@ Resume Highlights:
 
     const systemInstruction = `
 You are an elite career development assistant and talent acquisition expert. 
-Your job is to read Hamed Sadeghi's 10-year tech portfolio and assess his compatibility with a target Job Description.
+Your job is to read Hamed Sadeghi's comprehensive deep-tech portfolio and assess his compatibility with a target Job Description.
 Be objective, professional, and convincing of Hamed's strengths, avoiding generic clichés. 
 Highlight both his developer strengths (algorithms, C++, Python, Next.js/Django/Medusa, robotics) and product manager strengths (reviving startups, 40+ products launched, CEO/CTO level management).
     `;
